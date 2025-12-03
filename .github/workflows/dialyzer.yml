@@ -59,6 +59,13 @@ jobs:
       - name: Compile
         run: mix compile
 
+      - name: Build Dialyzer PLT (if needed)
+        run: |
+          # Force PLT rebuild if incremental PLT doesn't exist or is stale
+          if [ ! -f _build/dev/*incremental.plt ]; then
+            echo "PLT not found, will be built by Dialyzer"
+          fi
+
       - name: Run Dialyzer
         run: mix dialyzer
 

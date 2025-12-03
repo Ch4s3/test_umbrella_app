@@ -14,38 +14,16 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
   end
 
   defp dialyzer_config do
-    # OTP apps that should be included in apps (per Dialyzer incremental mode design)
-    other_apps = [
-      :erts,
-      :kernel,
-      :stdlib,
-      :crypto,
-      :elixir,
-      :logger,
-      :mix,
-      :public_key,
-      :phoenix,
-      :phoenix_html,
-      :phoenix_live_view,
-      :phoenix_live_reload,
-      :phoenix_pubsub,
-      :phoenix_template,
-      :ecto,
-      :ecto_sql,
-      :plug,
-      :telemetry,
-      :telemetry_metrics
-    ]
-
-    # Get dependencies and project apps
-    # Note: This is evaluated at compile time, so deps might not be fully available
-    # but it should work when mix.exs is evaluated during project load
-    project_apps = [:web, :core]
-
+    # Using :transitive pattern to automatically include all dependencies
+    # This ensures all transitive dependencies are included, preventing
+    # missing function errors in CI environments.
+    # The core_apps are OTP apps that are handled by core PLTs.
+    # The :transitive option automatically includes all project dependencies.
     [
       incremental: true,
-      apps: other_apps ++ project_apps,  # OTP apps + project apps (deps will be added by Dialyxir)
-      warning_apps: project_apps,
+      core_apps: [:erts, :kernel, :stdlib, :crypto, :elixir, :logger, :mix, :public_key],
+      apps: :transitive,  # Automatically resolves to core_apps ++ all deps ++ project_apps
+      warning_apps: :project,  # Only show warnings for project apps ([:web, :core])
       flags: [:no_improper_lists, :no_opaque]
     ]
   end
