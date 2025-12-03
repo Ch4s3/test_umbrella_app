@@ -14,16 +14,13 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
   end
 
   defp dialyzer_config do
-    # Using :transitive pattern to automatically include all dependencies
-    # This ensures all transitive dependencies are included, preventing
-    # missing function errors in CI environments.
-    # The core_apps are OTP apps that are handled by core PLTs.
-    # The :transitive option automatically includes all project dependencies.
+    # In incremental mode, Dialyzer automatically includes all dependencies in the PLT.
+    # We only need to specify the project apps to analyze.
+    # Dependencies are automatically included in the PLT but not in the apps list.
     [
       incremental: true,
-      core_apps: [:erts, :kernel, :stdlib, :crypto, :elixir, :logger, :mix, :public_key],
-      apps: :transitive,  # Automatically resolves to core_apps ++ all deps ++ project_apps
-      warning_apps: :project,  # Only show warnings for project apps ([:web, :core])
+      apps: [:web, :core],  # Only project apps - dependencies are auto-included in PLT
+      warning_apps: [:web, :core],  # Only show warnings for project apps
       flags: [:no_improper_lists, :no_opaque]
     ]
   end
