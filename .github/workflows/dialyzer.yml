@@ -65,8 +65,5 @@ jobs:
         run: mix compile
 
       - name: Run Dialyzer
-        run: |
-          # Dialyzer will build the PLT automatically in incremental mode
-          # Ensure all dependencies are available by compiling first
-          mix dialyzer
+        run: mix dialyzer
 

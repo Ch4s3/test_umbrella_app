@@ -14,12 +14,22 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
   end
 
   defp dialyzer_config do
-    # In incremental mode, Dialyzer automatically includes all dependencies in the PLT.
-    # We only need to specify the project apps to analyze.
-    # Dependencies are automatically included in the PLT but not in the apps list.
+    # OTP apps that should be included in apps (per Dialyzer incremental mode design)
+    otp_apps = [
+      :erts,
+      :kernel,
+      :stdlib,
+      :crypto,
+      :elixir,
+      :logger,
+      :mix,
+      :public_key
+    ]
+
     [
       incremental: true,
-      apps: [:web, :core],  # Only project apps - dependencies are auto-included in PLT
+      # Combine OTP apps with :transitive to include all dependencies + project apps
+      apps: otp_apps ++ [:transitive],
       warning_apps: [:web, :core],  # Only show warnings for project apps
       flags: [:no_improper_lists, :no_opaque]
     ]
@@ -47,7 +57,7 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
     [
       # Required to run "mix format" on ~H/.heex files from the umbrella root
       {:phoenix_live_view, ">= 0.0.0"},
-      {:dialyxir, git: "https://github.com/Ch4s3/dialyxir.git", branch: "incremental", only: [:dev, :test], runtime: false}
+      {:dialyxir, path: "../dialyxir", only: [:dev, :test], runtime: false}
     ]
   end
 
