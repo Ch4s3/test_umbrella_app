@@ -1,0 +1,68 @@
+name: Dialyzer
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  dialyzer:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        elixir-version: ['1.19.4']
+        otp-version: ['28.2']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Erlang/OTP
+        uses: erlang/setup-erlang@v2
+        with:
+          otp-version: ${{ matrix.otp-version }}
+
+      - name: Set up Elixir
+        uses: erlang/setup-elixir@v2
+        with:
+          elixir-version: ${{ matrix.elixir-version }}
+
+      - name: Get OTP version for cache key
+        id: otp-version
+        run: |
+          OTP_VERSION=$(erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().' -noshell | tr -d '"')
+          echo "version=$OTP_VERSION" >> $GITHUB_OUTPUT
+          echo "OTP version: $OTP_VERSION"
+
+      - name: Cache Mix dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ steps.otp-version.outputs.version }}-${{ matrix.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ steps.otp-version.outputs.version }}-${{ matrix.elixir-version }}-
+
+      - name: Cache Dialyxir PLT
+        uses: actions/cache@v4
+        with:
+          path: |
+            _build/dev/dialyxir_*.plt
+            _build/dev/*_incremental.plt
+          key: ${{ runner.os }}-dialyxir-plt-${{ steps.otp-version.outputs.version }}-${{ matrix.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-dialyxir-plt-${{ steps.otp-version.outputs.version }}-${{ matrix.elixir-version }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Compile
+        run: mix compile
+
+      - name: Run Dialyzer
+        run: mix dialyzer
+
