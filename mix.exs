@@ -72,7 +72,7 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
     [
       # Required to run "mix format" on ~H/.heex files from the umbrella root
       {:phoenix_live_view, ">= 0.0.0"},
-      {:dialyxir, path: "../dialyxir", only: [:dev, :test], runtime: false}
+      {:dialyxir, git: "https://github.com/Ch4s3/dialyxir.git", branch: "incremental", only: [:dev, :test], runtime: false}
     ]
   end
 
