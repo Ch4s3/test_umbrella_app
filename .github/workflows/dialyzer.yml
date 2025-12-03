@@ -20,15 +20,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Erlang/OTP
-        uses: erlang/setup-erlang@v2
-        with:
-          otp-version: ${{ matrix.otp-version }}
-
-      - name: Set up Elixir
-        uses: erlang/setup-elixir@v2
+      - name: Set up Erlang/OTP and Elixir
+        uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ matrix.elixir-version }}
+          otp-version: ${{ matrix.otp-version }}
 
       - name: Get OTP version for cache key
         id: otp-version
