@@ -28,8 +28,9 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
 
     [
       incremental: true,
-      # Combine OTP apps with :transitive to include all dependencies + project apps
-      apps: otp_apps ++ [:transitive],
+      # Combine OTP apps with :transitive and project apps
+      # :transitive expands to all dependencies + project apps
+      apps: otp_apps ++ [:transitive, :web, :core],
       warning_apps: [:web, :core],  # Only show warnings for project apps
       flags: [:no_improper_lists, :no_opaque]
     ]
