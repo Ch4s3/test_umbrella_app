@@ -19,19 +19,18 @@ defmodule TestUmbrellaApp.Umbrella.MixProject do
       :erts,
       :kernel,
       :stdlib,
-      :crypto,
       :elixir,
-      :logger,
-      :mix,
-      :public_key
+      :logger
     ]
 
     [
-      incremental: true,
-      # Combine OTP apps with :transitive and project apps
-      # :transitive expands to all dependencies + project apps
-      apps: otp_apps ++ [:transitive, :web, :core],
-      warning_apps: [:web, :core],  # Only show warnings for project apps
+      incremental: [
+        enabled: true,
+        # Combine OTP apps with :app_tree and project apps
+        # :app_tree expands to all transitive dependencies + project apps
+        apps: otp_apps ++ [:app_tree],
+        warning_apps: :apps_project  # Only show warnings for project apps
+      ],
       flags: [:no_improper_lists, :no_opaque]
     ]
   end
